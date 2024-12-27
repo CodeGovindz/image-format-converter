@@ -1,4 +1,3 @@
-// Helper function to get suggested filename
 function getSuggestedFilename(src, type) {
   if (src.startsWith("blob:") || src.startsWith("data:")) {
     return `image_${Date.now()}.${type}`;
@@ -17,7 +16,6 @@ function getSuggestedFilename(src, type) {
   return `${filename || "image"}.${type}`;
 }
 
-// Helper function to fetch image as data URL
 async function fetchAsDataURL(src) {
   if (src.startsWith("data:")) return src;
 
@@ -36,7 +34,6 @@ async function fetchAsDataURL(src) {
   }
 }
 
-// Download function
 function downloadImage(dataUrl, filename) {
   chrome.downloads.download(
     {
@@ -52,7 +49,6 @@ function downloadImage(dataUrl, filename) {
   );
 }
 
-// Convert image function
 async function convertImage(dataUrl, type, filename) {
   const img = new Image();
 
@@ -80,7 +76,6 @@ async function convertImage(dataUrl, type, filename) {
   });
 }
 
-// Create context menu items
 chrome.runtime.onInstalled.addListener(() => {
   ["JPG", "PNG", "WebP"].forEach((type) => {
     chrome.contextMenus.create({
@@ -91,7 +86,6 @@ chrome.runtime.onInstalled.addListener(() => {
   });
 });
 
-// Handle context menu clicks
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   if (!info.srcUrl) return;
 
@@ -101,13 +95,11 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   try {
     const dataUrl = await fetchAsDataURL(info.srcUrl);
 
-    // Check if format conversion is needed
     if (dataUrl.includes(`image/${format.toLowerCase()}`)) {
       downloadImage(dataUrl, filename);
       return;
     }
 
-    // Execute conversion in the current tab
     chrome.scripting.executeScript(
       {
         target: { tabId: tab.id },
@@ -117,14 +109,12 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
       (results) => {
         if (results && results[0] && results[0].result) {
           downloadImage(results[0].result, filename);
-          // Cleanup
           setTimeout(() => URL.revokeObjectURL(results[0].result), 60000);
         }
       }
     );
   } catch (error) {
     console.error("Error processing image:", error);
-    // Fallback to direct download
     downloadImage(info.srcUrl, filename);
   }
 });
