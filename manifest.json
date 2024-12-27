@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "Image Format Converter",
+  "version": "1.0",
+  "description": "Download images in PNG, JPG, or WebP format",
+  "permissions": [
+    "downloads",
+    "contextMenus",
+    "activeTab",
+    "scripting",
+    "offscreen"
+  ],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "16": "icon-16.png",
+    "48": "icon-48.png",
+    "128": "icon-128.png"
+  }
+}
